@@ -20,7 +20,7 @@ export const TextButton = ({
   buttonStyle,
   textStyle,
 }: MainButtonProps) => (
-  <TouchableOpacity style={[styles.addBtn, buttonStyle]} onPress={() => {}}>
+  <TouchableOpacity style={[styles.addBtn, buttonStyle]} onPress={onPress}>
     <Text style={[styles.addBtnText, textStyle]}>{title}</Text>
   </TouchableOpacity>
 );
