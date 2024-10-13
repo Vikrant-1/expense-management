@@ -44,6 +44,14 @@ export default function RootLayout() {
             headerLeft: () => <CloseButton />,
           }}
         />
+        <Stack.Screen
+          name="currency"
+          options={{
+            title: "Select Currency",
+            presentation: "modal",
+            headerLeft: () => <CloseButton />,
+          }}
+        />
       </Stack>
     </ThemeProvider>
   );
