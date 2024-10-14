@@ -9,7 +9,7 @@ import {
   Text,
   TouchableOpacity,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { Colors } from "@/constants/Colors";
 import { TextButton } from "@/components/Buttons";
 import { router, useFocusEffect } from "expo-router";
@@ -21,6 +21,7 @@ import moment from "moment";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { AMOUNT_REGX } from "@/utils/Regx";
 import { useRoute } from "@react-navigation/native";
+import { Picker } from "@react-native-picker/picker";
 
 const AddExpenseScreen = () => {
   const route = useRoute();
@@ -69,11 +70,39 @@ const AddExpenseScreen = () => {
 
   // Date -> done
   // Amount + currency handle (2 digit max) -> done
-  // Category
-  // Payment Mode
+  // Category -> done
+  // Payment Mode ->
   // Tags
   // attachment multiple photo pdf -> we can do this later
   // notes
+  const pickerRef = useRef();
+
+  function open() {
+    pickerRef?.current?.focus();
+  }
+
+  function close() {
+    pickerRef?.current?.blur();
+  }
+  const PaymentPicker = () => (
+    <Picker
+      ref={pickerRef}
+      mode="dropdown"
+      selectedValue={paymentMode}
+      onValueChange={(itemValue) => setPaymentMode(itemValue)}
+      style={{display:"none"}}
+      
+    >
+      <Picker.Item label="Select the Payment Mode" value="" />
+      <Picker.Item label="UPI" value="upi" />
+      <Picker.Item label="Credit Card" value="credit_card" />
+      <Picker.Item label="Debit Card" value="debit_card" />
+      <Picker.Item label="Cash" value="cash" />
+      <Picker.Item label="Net Banking" value="net_banking" />
+      <Picker.Item label="PayPal" value="paypal" />
+      <Picker.Item label="Cryptocurrency" value="crypto" />
+    </Picker>
+  );
 
   return (
     <KeyboardAvoidingView
@@ -156,12 +185,14 @@ const AddExpenseScreen = () => {
                 color={Colors.light.tint}
               />
             }
-            rightComponent={<ArrowRightComponent onPress={() => {}} />}
+            rightComponent={<ArrowRightComponent onPress={() => open()} />}
             label="Payment Mode"
             placeholder="Cash"
+            onPressText={() => open()}
             isTextInput={false}
           />
           <TextButton onPress={onPressAddExpense} title="Add Expense" />
+          <PaymentPicker />
         </View>
       </TouchableWithoutFeedback>
     </KeyboardAvoidingView>
