@@ -19,6 +19,8 @@ interface InputProps extends TextInputProps {
   inputStyle?: TextStyle;
   label?: string;
   isTextInput?: boolean;
+  inputType?: string;
+  onPressText?: () => void;
 }
 
 const Input = ({
@@ -32,26 +34,43 @@ const Input = ({
   keyboardType,
   onChangeText,
   placeholder,
+  onPressText,
 }: InputProps) => {
   return (
     <View style={[styles.inputContainer, style]}>
       {label && <Text style={styles.inputLabel}>{label}</Text>}
       <View style={styles.inputView}>
-        {leftComponent && leftComponent}
-        {isTextInput ? (
-          <TextInput
-            value={value}
-            onChangeText={onChangeText}
-            keyboardType={keyboardType ?? "default"}
-            style={[styles.input, inputStyle]}
-            placeholder={placeholder}
-          />
-        ) : (
-          <TouchableOpacity style={{ width: "70%",marginLeft:15, }}>
-              <Text style={{ fontSize: 16, textAlignVertical:'center'}}>{value ? value : placeholder}</Text>
-          </TouchableOpacity>
-        )}
-        {rightComponent && rightComponent}
+        <View style={{ width: "85%", flexDirection: "row" }}>
+          {leftComponent && leftComponent}
+          {isTextInput ? (
+            <TextInput
+              value={value}
+              onChangeText={onChangeText}
+              keyboardType={keyboardType ?? "default"}
+              style={[styles.input, inputStyle]}
+              placeholder={placeholder}
+            />
+          ) : (
+            <TouchableOpacity
+              onPress={onPressText}
+              style={{
+                width: "85%",
+                backgroundColor: "red",
+                marginLeft: 15,
+                marginTop: 2,
+              }}
+            >
+              <Text style={{ fontSize: 16, textAlignVertical: "center" }}>
+                {value ? value : placeholder}
+              </Text>
+            </TouchableOpacity>
+          )}
+        </View>
+        <View
+          style={{ width: "15%", paddingRight: 15, backgroundColor: "blue" }}
+        >
+          {rightComponent && rightComponent}
+        </View>
       </View>
     </View>
   );
@@ -74,6 +93,7 @@ const styles = StyleSheet.create({
     width: "100%",
     flexDirection: "row",
     marginTop: 3,
+    justifyContent: "space-between",
   },
   inputLabel: {
     fontSize: 14,
