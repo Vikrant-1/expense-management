@@ -20,11 +20,14 @@ import { Ionicons } from "@expo/vector-icons";
 import moment from "moment";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { AMOUNT_REGX } from "@/utils/Regx";
+import { useRoute } from "@react-navigation/native";
 
 const AddExpenseScreen = () => {
+  const route = useRoute();
+
   const [currency, setCurrency] = useState(DEFAULT_CURRENCY);
   const [amount, setAmount] = useState("");
-  const [category, setCategory] = useState("");
+  const [category, setCategory] = useState(route?.params?.category ?? "");
   const [expenseDate, setExpenseDate] = useState(new Date());
   const [paymentMode, setPaymentMode] = useState("");
 
@@ -126,11 +129,21 @@ const AddExpenseScreen = () => {
             label="Category"
             rightComponent={
               <ArrowRightComponent
-                onPress={() => router.navigate("/categoryList")}
+                onPress={() =>
+                  router.navigate({
+                    pathname: "/categoryList",
+                    params: { category },
+                  })
+                }
               />
             }
             isTextInput={false}
-            onPressText={() => router.navigate("/categoryList")}
+            onPressText={() =>
+              router.navigate({
+                pathname: "/categoryList",
+                params: { category },
+              })
+            }
             placeholder="Food ..."
           />
           <Input
