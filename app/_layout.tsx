@@ -48,8 +48,17 @@ export default function RootLayout() {
           name="currency"
           options={{
             title: "Select Currency",
+            headerTitleAlign:'center',
             presentation: "modal",
             headerLeft: () => <CloseButton />,
+          }}
+        />
+          <Stack.Screen
+          name="categoryList"
+          options={{
+            title: "Categories",
+            headerTitleAlign:'center',
+            presentation: "modal",
           }}
         />
       </Stack>
