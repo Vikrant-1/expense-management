@@ -55,7 +55,6 @@ const Input = ({
               onPress={onPressText}
               style={{
                 width: "85%",
-                backgroundColor: "red",
                 marginLeft: 15,
                 marginTop: 2,
               }}
@@ -67,7 +66,7 @@ const Input = ({
           )}
         </View>
         <View
-          style={{ width: "15%", paddingRight: 15, backgroundColor: "blue" }}
+          style={{ width: "15%", paddingRight: 15,}}
         >
           {rightComponent && rightComponent}
         </View>
