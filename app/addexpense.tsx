@@ -5,11 +5,10 @@ import {
   StyleSheet,
   TouchableWithoutFeedback,
   View,
-  TextInput,
   Text,
   TouchableOpacity,
 } from "react-native";
-import React, { useCallback, useRef, useState } from "react";
+import React, { useCallback, useMemo, useRef, useState } from "react";
 import { Colors } from "@/constants/Colors";
 import { TextButton } from "@/components/Buttons";
 import { router, useFocusEffect } from "expo-router";
@@ -20,9 +19,8 @@ import { Ionicons } from "@expo/vector-icons";
 import moment from "moment";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { AMOUNT_REGX } from "@/utils/Regx";
-import { useRoute } from "@react-navigation/native";
+import { RouteProp, useRoute } from "@react-navigation/native";
 import { Picker } from "@react-native-picker/picker";
-import TagComponent from "@/components/TagComponent";
 import Attachments from "@/components/Attachments";
 import { useDocumentPicker } from "@/hooks/useDocumentPicker";
 
@@ -36,25 +34,30 @@ const paymentOptions = [
   { label: "Cryptocurrency", value: "crypto" },
 ];
 
+type RouteParams = {
+  params: {
+    category: string;
+    icon: keyof typeof Ionicons.glyphMap;
+  };
+};
 const AddExpenseScreen = () => {
-  const route = useRoute();
+  const route = useRoute<RouteProp<RouteParams, "params">>();
+  const pickerRef = useRef<Picker<string> | null>(null);
 
   const [currency, setCurrency] = useState(DEFAULT_CURRENCY);
-  const [amount, setAmount] = useState("");
-  const [category, setCategory] = useState("");
+  const [amount, setAmount] = useState<string>("");
   const [expenseDate, setExpenseDate] = useState(new Date());
-  const [paymentMode, setPaymentMode] = useState("");
+  const [paymentMode, setPaymentMode] = useState<string>("cash");
   const [showDatePicker, setShowDatePicker] = useState(false);
-  const [tagsList, setTagsList] = useState([]);
+  const { uploadDocs, docs, removeDocs } = useDocumentPicker();
 
-  const { uploadDocs,docs } = useDocumentPicker();
+  const category = useMemo(() => {
+    return route?.params?.category || "Food";
+  }, [route?.params?.category]);
 
-  useFocusEffect(
-    useCallback(() => {
-      if (route?.params?.category !== category)
-        setCategory(route?.params?.category);
-    }, [route?.params?.category])
-  );
+  const categoryIcon = useMemo(() => {
+    return route?.params?.icon || "fast-food-outline";
+  }, [route?.params?.icon]);
 
   const getCurrency = async () => {
     const value = await getLocalCurrency();
@@ -93,21 +96,8 @@ const AddExpenseScreen = () => {
   const paymentTitle = (paymentMode: string) =>
     paymentOptions.find((i) => i.value === paymentMode)?.label;
 
-  // Date -> done
-  // Amount + currency handle (2 digit max) -> done
-  // Category -> done
-  // Payment Mode -> done
-  // Tags -> not now
-  // attachment multiple photo pdf -> we can do this later
-  // notes
-  const pickerRef = useRef();
-
   function open() {
     pickerRef?.current?.focus();
-  }
-
-  function close() {
-    pickerRef?.current?.blur();
   }
   const PaymentPicker = () => (
     <Picker
@@ -132,8 +122,6 @@ const AddExpenseScreen = () => {
       <Picker.Item label="Cryptocurrency" value="crypto" />
     </Picker>
   );
-
-  const openDocumentPicker = () => {};
 
   return (
     <KeyboardAvoidingView
@@ -169,7 +157,15 @@ const AddExpenseScreen = () => {
                 setAmount(text);
               }
             }}
-            leftComponent={<CurrencyView />}
+            leftComponent={
+              <Ionicons
+                style={styles.iconView}
+                name={"cash"}
+                size={24}
+                color={Colors.light.tint}
+              />
+            }
+            rightComponent={<CurrencyView />}
             inputStyle={{ fontSize: 18 }}
             label="Amount"
             placeholder="0.00"
@@ -177,11 +173,10 @@ const AddExpenseScreen = () => {
           />
           <Input
             value={category}
-            onChangeText={setCategory}
             leftComponent={
               <Ionicons
                 style={styles.iconView}
-                name="cafe"
+                name={categoryIcon}
                 size={24}
                 color={Colors.light.tint}
               />
@@ -232,13 +227,20 @@ const AddExpenseScreen = () => {
                 color={Colors.light.tint}
               />
             }
-            rightComponent={<ArrowRightComponent onPress={uploadDocs} />}
-            placeholder="Pick your document"
+            label="Attachments"
+            rightComponent={
+              docs.length >= 5 ? null : (
+                <ArrowRightComponent onPress={uploadDocs} />
+              )
+            }
+            placeholder={
+              docs.length >= 5 ? "Expense Attachments" : "Pick your document"
+            }
             onPressText={uploadDocs}
             isTextInput={false}
           />
 
-          <Attachments attachments={docs} />
+          <Attachments attachments={docs} removeAttachments={removeDocs} />
           <TextButton onPress={onPressAddExpense} title="Add Expense" />
           <PaymentPicker />
         </View>

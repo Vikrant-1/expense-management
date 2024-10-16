@@ -10,31 +10,58 @@ import { Ionicons } from "@expo/vector-icons";
 import { Colors } from "@/constants/Colors";
 import { TextButton } from "@/components/Buttons";
 import { router, useRouter } from "expo-router";
-import { useRoute } from "@react-navigation/native";
+import { RouteProp, useRoute } from "@react-navigation/native";
 
-const expenseCategories = [
-  { name: "Food", icon: "fast-food-outline" },
-  { name: "Shopping", icon: "cart-outline" },
-  { name: "Bills", icon: "wallet-outline" },
-  { name: "Entertainment", icon: "tv-outline" },
-  { name: "Healthcare", icon: "medkit-outline" },
-  { name: "Travel", icon: "airplane-outline" },
-  { name: "Groceries", icon: "basket-outline" },
-  { name: "Personal Care", icon: "heart-outline" },
-  { name: "Education", icon: "school-outline" },
-  { name: "Rent", icon: "home-outline" },
-  { name: "Insurance", icon: "shield-checkmark-outline" },
-  { name: "Savings", icon: "cash-outline" },
-  { name: "Gifts", icon: "gift-outline" },
-  { name: "Investments", icon: "trending-up-outline" },
-  { name: "Taxes", icon: "document-text-outline" },
-  { name: "Fitness", icon: "barbell-outline" },
-  { name: "Miscellaneous", icon: "ellipsis-horizontal-outline" },
+interface ExpenseCategoryProps {
+  name: string;
+  icon: keyof typeof Ionicons.glyphMap;
+  filledIcon: keyof typeof Ionicons.glyphMap;
+}
+
+type RouteParams = {
+  params: {
+    category: string;
+    icon: keyof typeof Ionicons.glyphMap;
+  };
+};
+
+const expenseCategories: ExpenseCategoryProps[] = [
+  { name: "Food", icon: "fast-food-outline", filledIcon: "fast-food" },
+  { name: "Shopping", icon: "cart-outline", filledIcon: "cart" },
+  { name: "Bills", icon: "wallet-outline", filledIcon: "wallet" },
+  { name: "Entertainment", icon: "tv-outline", filledIcon: "tv" },
+  { name: "Healthcare", icon: "medkit-outline", filledIcon: "medkit" },
+  { name: "Travel", icon: "airplane-outline", filledIcon: "airplane" },
+  { name: "Groceries", icon: "basket-outline", filledIcon: "basket" },
+  { name: "Personal Care", icon: "heart-outline", filledIcon: "heart" },
+  { name: "Education", icon: "school-outline", filledIcon: "school" },
+  { name: "Rent", icon: "home-outline", filledIcon: "home" },
+  {
+    name: "Insurance",
+    icon: "shield-checkmark-outline",
+    filledIcon: "shield-checkmark",
+  },
+  { name: "Savings", icon: "cash-outline", filledIcon: "cash" },
+  { name: "Gifts", icon: "gift-outline", filledIcon: "gift" },
+  {
+    name: "Investments",
+    icon: "trending-up-outline",
+    filledIcon: "trending-up",
+  },
+  { name: "Taxes", icon: "document-text-outline", filledIcon: "document-text" },
+  { name: "Fitness", icon: "barbell-outline", filledIcon: "barbell" },
+  {
+    name: "Miscellaneous",
+    icon: "ellipsis-horizontal-outline",
+    filledIcon: "ellipsis-horizontal",
+  },
 ];
 
 const CategoryList = () => {
-  const route = useRoute();
-  const [category, setCategory] = useState( route?.params?.category ??"");
+  const route = useRoute<RouteProp<RouteParams, "params">>();
+  const [category, setCategory] = useState(route?.params?.category ?? "");
+  const [icon, setIcon] = useState(route?.params?.icon ?? "");
+
   return (
     <View style={{ flex: 1, backgroundColor: "#fff" }}>
       <FlatList
@@ -47,6 +74,7 @@ const CategoryList = () => {
             <TouchableOpacity
               onPress={() => {
                 setCategory(item.name);
+                setIcon(item.filledIcon);
               }}
               style={[
                 styles.item,
@@ -57,20 +85,11 @@ const CategoryList = () => {
                 },
               ]}
             >
-              <Ionicons name={item.icon} size={25} color={Colors.light.tint} />
-              {/* {item.name === category && (
-                <Ionicons
-                  style={{
-                    position: "absolute",
-                    right: -5,
-                    top: -10,
-                    zIndex: 3,
-                  }}
-                  name={"checkmark-circle"}
-                  size={20}
-                  color={Colors.light.tint}
-                />
-              )} */}
+              <Ionicons
+                name={item.name === category ? item.filledIcon : item.icon}
+                size={25}
+                color={Colors.light.tint}
+              />
             </TouchableOpacity>
             <Text style={{ fontSize: 14, marginTop: 3 }}>{item.name}</Text>
           </View>
@@ -79,7 +98,10 @@ const CategoryList = () => {
       <TextButton
         title="Done"
         onPress={() => {
-          router.navigate({ pathname: "/addexpense", params: { category } });
+          router.navigate({
+            pathname: "/addexpense",
+            params: { category, icon },
+          });
         }}
       />
     </View>

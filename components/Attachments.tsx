@@ -1,7 +1,17 @@
-import { FlatList, Image, StyleSheet, Text, View } from "react-native";
-import React from "react";
+import {
+  FlatList,
+  Image,
+  Pressable,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import React, { useState } from "react";
 
 import { DocumentPickerAsset } from "expo-document-picker";
+import { Ionicons } from "@expo/vector-icons";
+import FullScreenImage from "./FullScreenImage";
 
 // Function to get icon based on file type
 const getFileIcon = (mimeType: string) => {
@@ -23,30 +33,67 @@ const getFileIcon = (mimeType: string) => {
 
 interface AttachmentsProps {
   attachments: DocumentPickerAsset[];
+  removeAttachments: (index: number) => void;
 }
 
-const Attachments = ({ attachments }: AttachmentsProps) => {
+const Attachments = ({ attachments, removeAttachments }: AttachmentsProps) => {
+  const [showFullScreen, setShowFullScreen] = useState(false);
+  const [url, setUrl] = useState("");
+
   return (
-    <FlatList
-      style={{ marginVertical: 15 }}
-      data={attachments}
-      horizontal
-      keyExtractor={(item) => item.name + item.uri}
-      renderItem={({ item, index }) => (
-        <Image
-          style={{
-            width: 80,
-            height: 80,
-            resizeMode: "contain",
-            marginRight: 10,
-          }}
-          source={getFileIcon(item.mimeType ?? "")}
-        />
-      )}
-    />
+    <View style={styles.list}>
+      {attachments.map((item, index) => (
+        <View key={item.name + index} style={styles.item}>
+          <Pressable
+            onPress={() => {
+              setUrl(item.uri);
+              setShowFullScreen(true);
+            }}
+          >
+            <Image
+              style={styles.image}
+              source={
+                item.uri ? { uri: item.uri } : getFileIcon(item.mimeType ?? "")
+              }
+            />
+          </Pressable>
+          <TouchableOpacity
+            style={styles.closeBtn}
+            onPress={() => removeAttachments(index)}
+          >
+            <Ionicons name="close-circle" size={24} color={"#36454F"} />
+          </TouchableOpacity>
+        </View>
+      ))}
+      <FullScreenImage
+        uri={url}
+        isVisible={showFullScreen}
+        closeModal={() => setShowFullScreen(false)}
+      />
+    </View>
   );
 };
 
 export default Attachments;
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  list: {
+    flexDirection: "row",
+    paddingLeft: 55,
+    paddingTop: 8,
+    flexWrap: "wrap",
+    gap: 10,
+  },
+  item: { marginRight: 25, marginTop: 15 },
+  image: {
+    width: 80,
+    height: 80,
+    borderRadius: 10,
+    resizeMode: "stretch",
+  },
+  closeBtn: {
+    position: "absolute",
+    right: -8,
+    top: -8,
+  },
+});

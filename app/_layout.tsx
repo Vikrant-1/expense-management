@@ -55,6 +55,7 @@ export default function RootLayout() {
         />
           <Stack.Screen
           name="categoryList"
+          initialParams={{category:''}}
           options={{
             title: "Categories",
             headerTitleAlign:'center',

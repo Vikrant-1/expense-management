@@ -8,6 +8,7 @@ export const useDocumentPicker = () => {
   const [error, setError] = useState<string | null>(null); // To track errors
 
   const uploadDocs = async () => {
+    if (docs.length >= 5) return;
     try {
       setIsLoading(true);
       setError(null);
@@ -31,11 +32,17 @@ export const useDocumentPicker = () => {
     setDocs([]);
   };
 
+  const removeDocs = (index: number) => {
+    const filteredDocs = docs.filter((_, i) => i !== index);
+    setDocs(filteredDocs);
+  };
+
   return {
     docs,
     isLoading,
     error,
     uploadDocs,
     resetDocs,
+    removeDocs,
   };
 };

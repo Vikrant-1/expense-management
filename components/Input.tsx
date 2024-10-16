@@ -80,7 +80,7 @@ export default Input;
 const styles = StyleSheet.create({
   inputContainer: {
     width: "100%",
-    marginHorizontal: 8,
+    paddingLeft:15,
     marginTop: 20,
   },
   input: {
