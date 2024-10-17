@@ -1,0 +1,7 @@
+<resources>
+  <string name="app_name">expense-management</string>
+  <string name="expo_splash_screen_resize_mode" translatable="false">contain</string>
+  <string name="expo_splash_screen_status_bar_translucent" translatable="false">false</string>
+  <string name="expo_system_ui_user_interface_style" translatable="false">automatic</string>
+  <string name="server_client_id" >6389073113-oof69f9j0sk83gvfco3grv771ppbbtvj.apps.googleusercontent.com</string>
+</resources>
