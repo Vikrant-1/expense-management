@@ -48,7 +48,8 @@ const AddExpenseScreen = () => {
   const [amount, setAmount] = useState<string>("");
   const [expenseDate, setExpenseDate] = useState(new Date());
   const [paymentMode, setPaymentMode] = useState<string>("cash");
-  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [showDatePicker, setShowDatePicker] = useState<boolean>(false);
+  const [description, setDescription] = useState<string>("");
   const { uploadDocs, docs, removeDocs } = useDocumentPicker();
 
   const category = useMemo(() => {
@@ -69,7 +70,6 @@ const AddExpenseScreen = () => {
       getCurrency();
     }, [])
   );
-  const onPressAddExpense = () => {};
 
   const CurrencyView = () => (
     <TouchableOpacity
@@ -122,6 +122,11 @@ const AddExpenseScreen = () => {
       <Picker.Item label="Cryptocurrency" value="crypto" />
     </Picker>
   );
+
+  const onPressAddExpense = async () => {
+    
+
+  };
 
   return (
     <KeyboardAvoidingView
@@ -218,6 +223,21 @@ const AddExpenseScreen = () => {
             isTextInput={false}
           />
 
+          <Input
+            value={description}
+            onChangeText={setDescription}
+            leftComponent={
+              <Ionicons
+                style={styles.iconView}
+                name={"document-text"}
+                size={24}
+                color={Colors.light.tint}
+              />
+            }
+            isMultiline={true}
+            label="Additional Details"
+            placeholder="Add relevant details ..."
+          />
           <Input
             leftComponent={
               <Ionicons

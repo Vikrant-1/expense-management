@@ -21,6 +21,7 @@ interface InputProps extends TextInputProps {
   isTextInput?: boolean;
   inputType?: string;
   onPressText?: () => void;
+  isMultiline?: boolean;
 }
 
 const Input = ({
@@ -35,6 +36,7 @@ const Input = ({
   onChangeText,
   placeholder,
   onPressText,
+  isMultiline = false,
 }: InputProps) => {
   return (
     <View style={[styles.inputContainer, style]}>
@@ -47,7 +49,12 @@ const Input = ({
               value={value}
               onChangeText={onChangeText}
               keyboardType={keyboardType ?? "default"}
-              style={[styles.input, inputStyle]}
+              style={[
+                styles.input,
+                !rightComponent ? { width: "90%" } : {},
+                inputStyle,
+              ]}
+              multiline={isMultiline}
               placeholder={placeholder}
             />
           ) : (
@@ -65,9 +72,7 @@ const Input = ({
             </TouchableOpacity>
           )}
         </View>
-        <View
-          style={{ width: "15%", paddingRight: 15,}}
-        >
+        <View style={{ width: "15%", paddingRight: 15 }}>
           {rightComponent && rightComponent}
         </View>
       </View>
@@ -80,7 +85,7 @@ export default Input;
 const styles = StyleSheet.create({
   inputContainer: {
     width: "100%",
-    paddingLeft:15,
+    paddingLeft: 15,
     marginTop: 20,
   },
   input: {
