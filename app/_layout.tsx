@@ -4,9 +4,9 @@ import {
   ThemeProvider,
 } from "@react-navigation/native";
 import { useFonts } from "expo-font";
-import { Stack } from "expo-router";
+import { router, Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import "react-native-reanimated";
 
 import { useColorScheme } from "@/hooks/useColorScheme";
@@ -20,6 +20,7 @@ export default function RootLayout() {
   const [loaded] = useFonts({
     SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
   });
+  const [user, setUser] = useState(null); // Assume this is set based on your auth logic
 
   useEffect(() => {
     if (loaded) {
@@ -30,39 +31,26 @@ export default function RootLayout() {
   if (!loaded) {
     return null;
   }
-
+  useEffect(() => {
+    if (user) {
+      router.replace("/(tabs)");
+    } else {
+      router.replace("/auth/login");
+    }
+  }, [user]);
   return (
     <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="+not-found" />
-        <Stack.Screen
-          name="addexpense"
-          options={{
-            title: "Add Expense",
-            presentation: "fullScreenModal",
-            headerLeft: () => <CloseButton />,
-          }}
-        />
-        <Stack.Screen
-          name="currency"
-          options={{
-            title: "Select Currency",
-            headerTitleAlign:'center',
-            presentation: "modal",
-            headerLeft: () => <CloseButton />,
-          }}
-        />
-          <Stack.Screen
-          name="categoryList"
-          initialParams={{category:''}}
-          options={{
-            title: "Categories",
-            headerTitleAlign:'center',
-            presentation: "modal",
-          }}
-        />
-      </Stack>
+      {!user ? (
+        <Stack screenOptions={{ headerShown: false }}>
+          <Stack.Screen name="auth/login" />
+          <Stack.Screen name="auth/register" />
+          <Stack.Screen name="auth/onboarding" />
+        </Stack>
+      ) : (
+        <Stack>
+          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        </Stack>
+      )}
     </ThemeProvider>
   );
 }
